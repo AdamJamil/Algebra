@@ -4,13 +4,13 @@ public class Driver
 {
     Driver()
     {
-        Group Z2 = new Group.Z(2);
-        Group S3 = new Group.Symmetric(3);
-        Group prod = new Group.ProductGroup(new Group[]{Z2, S3});
-
-        for (Element element : prod.elements)
+        Group Z2 = new Z(72);
+        Z2.generateNormSub();
+        for (Group group : Z2.normSub)
         {
-            System.out.println(element);
+            for (Element element : group.elements)
+                System.out.println(element);
+            System.out.println();
         }
     }
 
