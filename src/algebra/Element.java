@@ -202,8 +202,44 @@ class Tuple extends Element
         name = "[";
 
         for (Element val : vals)
-            name += val.toString() + ", ";
+            name += val + ", ";
 
-        return name.substring(0, name.length() - 2) + "]";
+        return name = name.substring(0, name.length() - 2) + "]";
+    }
+}
+
+class Coset extends Element
+{
+    Element g;
+    QuotientGroup GN;
+
+    Coset(Element g, QuotientGroup GN)
+    {
+        this.g = g;
+        this.GN = GN;
+    }
+
+    @Override
+    Element multiply(Element other)
+    {
+        return new Coset(GN.rep.get(g.multiply(((Coset) other).g)), GN);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return g.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        return g.equals(((Coset) obj).g);
+    }
+
+    @Override
+    public String toString()
+    {
+        return g + "" + GN.N;
     }
 }

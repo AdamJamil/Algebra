@@ -4,14 +4,13 @@ public class Driver
 {
     Driver()
     {
-        Group Z2 = new Z(72);
-        Z2.generateNormSub();
-        for (Group group : Z2.normSub)
-        {
-            for (Element element : group.elements)
-                System.out.println(element);
-            System.out.println();
-        }
+        Group Z2 = new Z(2);
+        Group Z4 = new Z(4);
+        Group Z24 = new ProductGroup(new Group[]{Z2, Z4});
+        Z24.generateNormSub();
+        Group quotient = new QuotientGroup(Z24, Z24.normSub[1]);
+        for (Element element : quotient.elements)
+            System.out.println(element);
     }
 
     public static void main(String[] args)

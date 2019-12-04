@@ -12,6 +12,15 @@ abstract class Group
     abstract void generateSub();
     abstract void generateNormSub();
 
+    @Override
+    public String toString()
+    {
+        String out = "{";
+        for (Element element : elements)
+            out += element + ", ";
+
+        return out.substring(0, out.length() - 2) + "}";
+    }
 }
 
 class S extends Group
@@ -147,20 +156,66 @@ class Z extends Group
 
 class ProductGroup extends Group
 {
+    Group[] groups;
+
     @Override
     void generateNormSub()
     {
+        for (Group group : groups)
+            if (group.normSub == null)
+                group.generateNormSub();
 
+        int total = 1;
+        for (Group group : groups)
+            total *= group.normSub.length;
+
+        normSub = new Group[total];
+
+        for (int i = 0; i < total; i++)
+        {
+            Group[] next = new Group[groups.length];
+            int idx = i;
+            for (int j = 0; j < groups.length; j++)
+            {
+                next[j] = groups[j].normSub[idx % groups[j].normSub.length];
+                idx /= groups[j].normSub.length;
+            }
+
+            normSub[i] = new ProductGroup(next);
+        }
     }
 
     @Override
     void generateSub()
     {
+        for (Group group : groups)
+            if (group.sub == null)
+                group.generateSub();
 
+        int total = 1;
+        for (Group group : groups)
+            total *= group.sub.length;
+
+        sub = new Group[total];
+
+        for (int i = 0; i < total; i++)
+        {
+            Group[] next = new Group[groups.length];
+            int idx = i;
+            for (int j = 0; j < groups.length; j++)
+            {
+                next[j] = groups[j].sub[idx % groups[j].sub.length];
+                idx /= groups[j].sub.length;
+            }
+
+            sub[i] = new ProductGroup(next);
+        }
     }
 
     ProductGroup(Group[] groups)
     {
+        this.groups = groups;
+
         int count = 1;
         for (Group group : groups)
             count *= group.elements.length;
@@ -178,6 +233,49 @@ class ProductGroup extends Group
             }
 
             elements[i] = new Tuple(next);
+        }
+    }
+}
+
+class QuotientGroup extends Group
+{
+    HashMap<Element, Element> rep;
+    Group N;
+
+    @Override
+    void generateNormSub()
+    {
+
+    }
+
+    @Override
+    void generateSub()
+    {
+
+    }
+
+    QuotientGroup(Group G, Group N)
+    {
+        elements = new Coset[G.elements.length / N.elements.length];
+        rep = new HashMap<>();
+        this.N = N;
+
+        HashSet<Element> hit = new HashSet<>();
+        int ptr = 0;
+
+        for (Element g : G.elements)
+        {
+            if (hit.contains(g))
+                continue;
+
+            elements[ptr++] = new Coset(g, this);
+
+            for (Element n : N.elements)
+            {
+                Element gn = g.multiply(n);
+                hit.add(gn);
+                rep.put(gn, g);
+            }
         }
     }
 }
