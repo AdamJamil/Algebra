@@ -89,11 +89,8 @@ class Z extends Group
             if (order % primes[ptr] == 0)
             {
                 int count = 0;
-                while (order % primes[ptr] == 0)
-                {
+                for (; order % primes[ptr] == 0; count++)
                     order /= primes[ptr];
-                    count++;
-                }
 
                 p.put(primes[ptr], count);
 
@@ -158,6 +155,25 @@ class ProductGroup extends Group
 {
     Group[] groups;
 
+    ProductGroup flatten()
+    {
+        ArrayList<Group> allGroups = new ArrayList<>();
+
+        for (Group group : groups)
+            if (group instanceof ProductGroup)
+            {
+                ProductGroup flat = ((ProductGroup) group).flatten();
+                Collections.addAll(allGroups, flat.groups);
+            }
+            else
+                allGroups.add(group);
+
+        Group[] out = new Group[allGroups.size()];
+        allGroups.toArray(out);
+
+        return new ProductGroup(out);
+    }
+
     @Override
     void generateNormSub()
     {
@@ -212,7 +228,7 @@ class ProductGroup extends Group
         }
     }
 
-    ProductGroup(Group[] groups)
+    ProductGroup(Group... groups)
     {
         this.groups = groups;
 
