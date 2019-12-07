@@ -6,8 +6,8 @@ import static algebra.Element.primes;
 
 abstract class Group
 {
-    Element[] elements;
-    Group[] sub = null, normSub = null;
+    Element[] elements, generators;
+    Group[] sub, normSub;
 
     abstract void generateSub();
     abstract void generateNormSub();
